@@ -41,9 +41,9 @@ public class usuarioController {
     public ResponseEntity<usuario> actualizarUsuario(@PathVariable Long id, @RequestBody usuario usuario) {
         usuario usuarioActual = usuarioService.obtenerPorId(id);
         if(usuario != null) {
-            usuario.setUsername(usuarioActual.getUsername());
-            usuario.setEmail(usuarioActual.getEmail());
-            usuario usuarioActual2 = usuarioService.guardar(usuario);
+            usuarioActual.setUsername(usuario.getUsername());
+            usuarioActual.setEmail(usuario.getEmail());
+            usuario usuarioActual2 = usuarioService.guardar(usuarioActual);
             return new ResponseEntity<>(usuarioActual2, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

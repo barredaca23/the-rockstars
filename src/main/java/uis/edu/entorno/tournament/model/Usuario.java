@@ -1,10 +1,11 @@
-package uis.edu.entorno.tournament.modelo;
+package uis.edu.entorno.tournament.model;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "usuario")
-public class usuario {
+public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id_user;
@@ -12,7 +13,8 @@ public class usuario {
     private String username;
     private String email;
     private String contraseña;
-    public usuario() {}
+
+    public Usuario() {}
 
     public int getId_user() {
         return id_user;

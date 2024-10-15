@@ -3,7 +3,7 @@ package uis.edu.entorno.tournament.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id
@@ -12,7 +12,7 @@ public class Usuario {
 
     private String username;
     private String email;
-    private String contraseña;
+    private String password;
 
     public Usuario() {}
 
@@ -40,11 +40,11 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

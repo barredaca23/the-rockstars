@@ -42,19 +42,40 @@ public class RestControllerAuth {
     }
 
     @PostMapping("register")
-    public ResponseEntity<String> registrar(@RequestBody DtoRegistro dtoRegistro) {
-        if(usuarioRepository.existsByUsername(dtoRegistro.getUsername())) {
-            return new ResponseEntity<>("Usuario existente intenta con otro", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<DtoAuthRespuesta> registrar(@RequestBody DtoRegistro dtoRegistro) {
+        if (usuarioRepository.existsByUsername(dtoRegistro.getUsername())) {
+            return new ResponseEntity<>(new DtoAuthRespuesta("Usuario existente intenta con otro"), HttpStatus.BAD_REQUEST);
         }
+
         Usuario usuario = new Usuario();
         usuario.setUsername(dtoRegistro.getUsername());
         usuario.setEmail(dtoRegistro.getEmail());
         usuario.setPassword(passwordEncoder.encode(dtoRegistro.getPassword()));
-        Roles roles = rolesRepository.findByName("USER").get();
+
+        Roles roles = rolesRepository.findByName("USER").orElse(null);
+        if (roles == null) {
+            return new ResponseEntity<>(new DtoAuthRespuesta("Rol 'USER' no encontrado"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         usuario.setRoles(Collections.singletonList(roles));
-        usuarioRepository.save(usuario);
-        return new ResponseEntity<>("Usuario registrado com sucesso", HttpStatus.OK);
+
+        try {
+            usuarioRepository.save(usuario);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new DtoAuthRespuesta("Error al registrar usuario: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dtoRegistro.getUsername(), dtoRegistro.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtGenerador.generarToken(authentication);
+        System.out.println("Token generado: " + token);
+
+        return new ResponseEntity<>(new DtoAuthRespuesta(token), HttpStatus.OK);
     }
+
     @PostMapping("login")
     public ResponseEntity<DtoAuthRespuesta> login(@RequestBody DtoLogin dtoLogin) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

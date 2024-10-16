@@ -13,7 +13,6 @@ import java.util.Date;
 public class JwtGenerador {
 
     public String generarToken(Authentication authentication) {
-        System.out.println(ConstantesSecurity.JWT_FIRMA);
         String username = authentication.getName();
         Date tiempoActual = new Date();
         Date expiracionToken = new Date(tiempoActual.getTime() + ConstantesSecurity.JWT_EXPIRATION_TOKEN);

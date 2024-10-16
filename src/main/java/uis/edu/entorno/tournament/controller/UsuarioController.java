@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import uis.edu.entorno.tournament.model.Usuario;
 import uis.edu.entorno.tournament.service.UsuarioService;
-
+/*
 @Controller
 @RequestMapping("/")
 public class UsuarioController {
@@ -48,4 +48,4 @@ public class UsuarioController {
         usuarioService.eliminar(id);
         return "redirect:/usuarios";
     }
-}
+}*/

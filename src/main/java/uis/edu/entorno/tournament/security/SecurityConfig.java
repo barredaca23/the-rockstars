@@ -48,11 +48,10 @@ public class SecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                .requestMatchers("/auth/", "/auth/register","/","auth/login").permitAll()
+                .anyRequest()
+                .authenticated();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

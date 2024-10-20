@@ -1,69 +1,31 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script>
-        function handleLogin(event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // Hacer la solicitud de inicio de sesión
-            fetch('/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en el inicio de sesión');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Almacenar el token en el almacenamiento local
-                    localStorage.setItem('token', data.token);
-                    // Redirigir a la ruta protegida
-                    window.location.href = '/api/pruebas';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al iniciar sesión. Verifica tus credenciales.');
-                });
-        }
-    </script>
+    <title>Login</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}">Mi Aplicación</a>
-</nav>
+<div class="container">
+    <!-- Mostrar mensaje de error si existe -->
+    <div class="message" th:if="${message != null}">
+        <p th:text="${message}"></p>
+    </div>
 
-<div class="container mt-5">
-    <h1>Iniciar Sesión</h1>
-    <form id="loginForm" onsubmit="handleLogin(event)">
+    <h2>Login</h2>
+    <form th:action="@{/auth/login}" method="post" th:object="${dtoLogin}">
         <div class="form-group">
-            <label for="loginUsername">Nombre de Usuario</label>
-            <input type="text" class="form-control" id="loginUsername" name="username" required>
+            <label for="username">Username:</label>
+            <input th:field="*{username}" type="text" id="username" name="username" placeholder="Enter your username" required>
         </div>
+
         <div class="form-group">
-            <label for="loginPassword">Contraseña</label>
-            <input type="password" class="form-control" id="loginPassword" name="password" required>
+            <label for="password">Password:</label>
+            <input th:field="*{password}" type="password" id="password" name="password" placeholder="Enter your password" required>
         </div>
-        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+
+        <input type="submit" value="Login">
     </form>
 </div>
-
-<footer class="footer">
-    <div class="container">
-        <span class="text-muted">© 2024 Mi Aplicación</span>
-    </div>
-</footer>
 </body>
 </html>
-

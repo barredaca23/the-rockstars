@@ -1,10 +1,7 @@
 package uis.edu.entorno.tournament.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import uis.edu.entorno.tournament.dtos.DtoAuthRespuesta;
 import uis.edu.entorno.tournament.dtos.DtoLogin;
 import uis.edu.entorno.tournament.dtos.DtoRegistro;
 import uis.edu.entorno.tournament.model.Roles;
@@ -46,79 +42,62 @@ public class RestControllerAuth {
         this.jwtGenerador = jwtGenerador;
     }
 
-    @PostMapping("register")
-    public ResponseEntity<DtoAuthRespuesta> registrar(@RequestBody DtoRegistro dtoRegistro) {
-        // Verifica si el nombre de usuario ya existe
-        if (usuarioRepository.existsByUsername(dtoRegistro.getUsername())) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new DtoAuthRespuesta("Usuario existente, intenta con otro"));
-        }
+    @GetMapping("/register")
+    public String mostrarRegistro(Model model) {
+        model.addAttribute("dtoRegistro", new DtoRegistro());
+        return "register";
+    }
 
-        // Crea un nuevo usuario
+    @PostMapping("/register")
+    public String registrar(@ModelAttribute("dtoRegistro") DtoRegistro dtoRegistro, Model model) {
+        if (usuarioRepository.existsByUsername(dtoRegistro.getUsername())) {
+            model.addAttribute("message", "Usuario existente, intenta con otro");
+            return "register";
+        }
         Usuario usuario = new Usuario();
         usuario.setUsername(dtoRegistro.getUsername());
         usuario.setEmail(dtoRegistro.getEmail());
         usuario.setPassword(passwordEncoder.encode(dtoRegistro.getPassword()));
 
-        // Busca el rol "USER"
-        Roles roles = rolesRepository.findByName("USER").orElse(null);
+        Roles roles = rolesRepository.findByName("ADMIN").orElse(null);
         if (roles == null) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new DtoAuthRespuesta("Rol 'USER' no encontrado"));
+            model.addAttribute("message", "Rol 'USER' no encontrado");
+            return "register";
         }
-
         usuario.setRoles(Collections.singletonList(roles));
-
-        // Guarda el nuevo usuario
         try {
             usuarioRepository.save(usuario);
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new DtoAuthRespuesta("Error al registrar usuario: " + e.getMessage()));
+            model.addAttribute("message", "Error al registrar usuario: " + e.getMessage());
+            return "register";
         }
-
-        // Autenticación automática y generación de token
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dtoRegistro.getUsername(), dtoRegistro.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtGenerador.generarToken(authentication);
-        System.out.println("Token generado: " + token);
-
-        return ResponseEntity.ok(new DtoAuthRespuesta(token));
+        return "redirect:/auth/login";
     }
 
-    @PostMapping("login")
-    public ResponseEntity<DtoAuthRespuesta> login(@RequestBody DtoLogin dtoLogin) {
-        // Autenticación del usuario
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dtoLogin.getUsername(), dtoLogin.getPassword())
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // Generación de token
-        String token = jwtGenerador.generarToken(authentication);
-        return ResponseEntity.ok(new DtoAuthRespuesta(token));
+    @PostMapping("/login")
+    public String login(@ModelAttribute("dtoLogin") DtoLogin dtoLogin, Model model) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dtoLogin.getUsername(), dtoLogin.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtGenerador.generarToken(authentication);
+            return "redirect:/auth/user/pruebas";
+        } catch (Exception e) {
+            model.addAttribute("message", "Credenciales incorrectas, intenta de nuevo.");
+            return "login";
+        }
     }
 
-    // Métodos para manejar las vistas de registro y login
-    @GetMapping("register")
-    public String mostrarRegistro(Model model) {
-        model.addAttribute("dtoRegistro", new DtoRegistro());
-        return "register"; // Retorna la vista de registro
-    }
-
-    @GetMapping("login")
+    @GetMapping("/login")
     public String mostrarLogin(Model model) {
         model.addAttribute("dtoLogin", new DtoLogin());
-        return "login"; // Retorna la vista de login
+        return "login";
     }
 
-    // Puedes añadir métodos adicionales para manejar la lógica de tu aplicación
 }
 

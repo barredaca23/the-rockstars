@@ -16,8 +16,6 @@ public class JwtGenerador {
         String username = authentication.getName();
         Date tiempoActual = new Date();
         Date expiracionToken = new Date(tiempoActual.getTime() + ConstantesSecurity.JWT_EXPIRATION_TOKEN);
-
-        //Generar token
         String token = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -27,7 +25,6 @@ public class JwtGenerador {
         return token;
     }
 
-    //Extraer username apartir de un token
     public String obtenerUsernameDeJwt(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(ConstantesSecurity.JWT_FIRMA)
@@ -35,8 +32,6 @@ public class JwtGenerador {
                 .getBody();
         return claims.getSubject();
     }
-
-    //Validar token
     public Boolean validarToken(String token) {
         try{
             Jwts.parser().setSigningKey(ConstantesSecurity.JWT_FIRMA).parseClaimsJws(token);

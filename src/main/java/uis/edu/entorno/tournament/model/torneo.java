@@ -17,6 +17,7 @@ public class torneo {
     @Column(name = "id_torneo")
     private Long id_torneo;
 
+    private String nombreTorneo;
     private LocalDate fecha;
 
 

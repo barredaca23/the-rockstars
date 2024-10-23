@@ -86,7 +86,7 @@ public class RestControllerAuth {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtGenerador.generarToken(authentication);
-            return "redirect:/auth/user/pruebas";
+            return "redirect:/api/torneos";
         } catch (Exception e) {
             model.addAttribute("message", "Credenciales incorrectas, intenta de nuevo.");
             return "login";

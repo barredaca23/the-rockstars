@@ -49,7 +49,7 @@ public class SecurityConfig {
         http.csrf(c -> c.disable())
 
                 .authorizeHttpRequests(request -> request.requestMatchers("/auth/admin/pruebas")
-                        .hasAuthority("ADMIN").requestMatchers("/auth/user/pruebas").permitAll()
+                        .hasAuthority("ADMIN").requestMatchers("/api/torneos").permitAll()
                         .requestMatchers("/auth/register", "/css/**").permitAll()
                         .anyRequest().authenticated())
 

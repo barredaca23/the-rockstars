@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneos Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-button {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Admin Panel - Gestión de Torneos</h1>
+
+    <!-- Formulario para crear y actualizar torneos -->
+    <div class="form-group">
+        <label for="nombreTorneo">Nombre del Torneo:</label>
+        <input type="text" id="nombreTorneo" name="nombreTorneo">
+    </div>
+
+    <div class="form-group">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+    </div>
+
+    <div class="form-group">
+        <label for="tipoTorneo">Tipo de Torneo:</label>
+        <select id="tipoTorneo" name="tipoTorneo">
+            <!-- Llenar dinámicamente con los tipos de torneo -->
+        </select>
+    </div>
+
+    <button id="createTorneo" class="button">Crear Torneo</button>
+
+    <!-- Tabla de torneos -->
+    <table class="table" id="torneosTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Llenar dinámicamente con los torneos existentes -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Función para listar torneos (GET)
+    function listarTorneos() {
+        fetch('/api/torneos')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector("#torneosTable tbody");
+                tableBody.innerHTML = ''; // Limpiar la tabla
+
+                data.forEach(torneo => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${torneo.id_torneo}</td>
+                            <td>${torneo.nombreTorneo}</td>
+                            <td>${torneo.fecha}</td>
+                            <td>${torneo.tipoTorneo.nombre}</td>
+                            <td>
+                                <button class="button" onclick="editarTorneo(${torneo.id_torneo})">Editar</button>
+                                <button class="button delete-button" onclick="eliminarTorneo(${torneo.id_torneo})">Eliminar</button>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            });
+    }
+
+    // Función para crear un torneo (POST)
+    document.getElementById('createTorneo').addEventListener('click', () => {
+        const nombreTorneo = document.getElementById('nombreTorneo').value;
+        const fecha = document.getElementById('fecha').value;
+        const tipoTorneo = document.getElementById('tipoTorneo').value;
+
+        const torneo = {
+            nombreTorneo,
+            fecha,
+            tipoTorneo: { id_tipoTorneo: tipoTorneo }
+        };
+
+        fetch('/api/torneos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(torneo)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("Torneo creado con éxito!");
+                listarTorneos();
+            });
+    });
+
+    // Función para eliminar un torneo (DELETE)
+    function eliminarTorneo(id) {
+        fetch(`/api/torneos/${id}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                alert("Torneo eliminado con éxito!");
+                listarTorneos();
+            });
+    }
+
+    // Función para editar un torneo (UPDATE)
+    function editarTorneo(id) {
+        // Puedes agregar funcionalidad para llenar el formulario con los datos del torneo seleccionado
+    }
+
+    // Llamada inicial para listar los torneos al cargar la página
+    listarTorneos();
+</script>
+</body>
+</html>

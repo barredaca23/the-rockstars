@@ -48,9 +48,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(c -> c.disable())
 
-                .authorizeHttpRequests(request -> request.requestMatchers("/auth/admin/pruebas")
-                        .hasAuthority("ADMIN").requestMatchers("/api/torneos").permitAll()
-                        .requestMatchers("/auth/register", "/css/**").permitAll()
+                .authorizeHttpRequests(request -> request.requestMatchers("/auth/admin/pruebas", "/auth/admin/torneosCrud")
+                        .hasAuthority("ADMIN").requestMatchers("/api/torneos", "/css/**","auth/sobreNosotros", "auth/index").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
                         .anyRequest().authenticated())
 
                 .formLogin(form -> form.loginPage("/auth/login").loginProcessingUrl("/auth/login")

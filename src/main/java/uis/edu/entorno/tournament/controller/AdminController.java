@@ -10,10 +10,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/auth")
 public class AdminController {
 
-    @GetMapping("/admin/pruebas")
-    @ResponseBody
+    @GetMapping("/admin/admin-in")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String dashboard() {
-        return "Bienvenido al panel de administración";
+        return "admin-in";
+    }
+
+    @GetMapping("/sobreNosotros")
+    public String sobreNosotros() {
+        return "sobreNosotros";
+    }
+
+    @GetMapping("/index")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping("/admin/torneosCrud")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String torneos() {
+        return "torneosCrud"; // Esto busca el archivo torneos.html en templates
     }
 }

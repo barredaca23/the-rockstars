@@ -21,9 +21,9 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         var roles = authourities.stream().map(GrantedAuthority::getAuthority).findFirst();
 
         if (roles.orElse("").equals("ADMIN")) {
-            response.sendRedirect("/auth/admin/pruebas");
+            response.sendRedirect("/auth/admin/admin-in");
         } else if (roles.orElse("").equals("USER")) {
-            response.sendRedirect("/api/torneos");
+            response.sendRedirect("/api/torneos");  
         } else {
             response.sendRedirect("/error");
         }

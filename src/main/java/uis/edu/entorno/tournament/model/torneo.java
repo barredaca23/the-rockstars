@@ -17,7 +17,10 @@ public class torneo {
     @Column(name = "id_torneo")
     private Long id_torneo;
 
-    private String nombreTorneo;
+    @Column(name = "nombre_torneo")
+    private String nombre_torneo;
+
+    @Column(name = "fecha")
     private LocalDate fecha;
 
 
@@ -25,10 +28,11 @@ public class torneo {
     @JoinColumn(name = "id_tipoTorneo",referencedColumnName = "id_tipoTorneo")
     private tipoTorneo tipoTorneo;
 
-    public torneo(Long id_torneo, LocalDate fecha, uis.edu.entorno.tournament.model.tipoTorneo tipoTorneo) {
+    public torneo(Long id_torneo, LocalDate fecha, uis.edu.entorno.tournament.model.tipoTorneo tipoTorneo, String nombre_torneo) {
         this.id_torneo = id_torneo;
         this.fecha = fecha;
         this.tipoTorneo = tipoTorneo;
+        this.nombre_torneo = nombre_torneo;
     }
 
     public torneo() {
@@ -58,4 +62,8 @@ public class torneo {
     public void setTipoTorneo(uis.edu.entorno.tournament.model.tipoTorneo tipoTorneo) {
         this.tipoTorneo = tipoTorneo;
     }
+
+    public String getNombre_torneo() {return nombre_torneo;}
+
+    public void setNombre_torneo(String nombre_torneo) {this.nombre_torneo = nombre_torneo;}
 }

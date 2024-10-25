@@ -59,7 +59,7 @@ public class RestControllerAuth {
         usuario.setEmail(dtoRegistro.getEmail());
         usuario.setPassword(passwordEncoder.encode(dtoRegistro.getPassword()));
 
-        Roles roles = rolesRepository.findByName("ADMIN").orElse(null);
+        Roles roles = rolesRepository.findByName("USER").orElse(null);
         if (roles == null) {
             model.addAttribute("message", "Rol 'USER' no encontrado");
             return "register";

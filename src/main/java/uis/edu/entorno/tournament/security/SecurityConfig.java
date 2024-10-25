@@ -49,8 +49,8 @@ public class SecurityConfig {
         http.csrf(c -> c.disable())
 
                 .authorizeHttpRequests(request -> request.requestMatchers("/auth/admin/pruebas", "/auth/admin/torneosCrud")
-                        .hasAuthority("ADMIN").requestMatchers("/api/torneos", "/css/**","auth/sobreNosotros", "auth/index").permitAll()
-                        .requestMatchers("/auth/register").permitAll()
+                        .hasAuthority("ADMIN").requestMatchers("/api/torneos", "/css/**","auth/sobreNosotros", "auth/index", "/torneos").permitAll()
+                        .requestMatchers("/auth/register","/torneos").permitAll()
                         .anyRequest().authenticated())
 
                 .formLogin(form -> form.loginPage("/auth/login").loginProcessingUrl("/auth/login")

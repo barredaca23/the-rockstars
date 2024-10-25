@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Torneos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .torneos-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .torneo-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .torneo-card h2 {
+            color: #4CAF50;
+        }
+
+        .torneo-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Torneos Disponibles</h1>
+</div>
+<div id="torneosContainer" class="torneos-container">
+    <!-- Los recuadros de torneos se cargarán aquí dinámicamente -->
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", listarTorneos);
+
+    function listarTorneos() {
+        fetch('/api/torneos')
+            .then(response => response.json())
+            .then(data => {
+                const torneosContainer = document.getElementById("torneosContainer");
+
+                data.forEach(torneo => {
+                    const torneoCard = document.createElement('div');
+                    torneoCard.classList.add('torneo-card');
+
+                    torneoCard.innerHTML = `
+                    <h2>${torneo.nombre_torneo ?? 'Nombre no disponible'}</h2>
+                    <p><strong>Fecha:</strong> ${torneo.fecha ?? 'No especificada'}</p>
+                    <p><strong>Tipo:</strong> ${torneo.tipoTorneo?.nombre ?? 'No especificado'}</p>
+                `;
+
+                    torneosContainer.appendChild(torneoCard);
+                });
+            })
+            .catch(error => console.error('Error al obtener los torneos:', error));
+    }
+
+</script>
+</body>
+</html>

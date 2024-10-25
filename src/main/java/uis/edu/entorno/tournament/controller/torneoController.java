@@ -51,6 +51,7 @@ public class torneoController {
 
             if (torneoExistente.isPresent()) {
                 torneo torneoActualizado = torneoExistente.get();
+                torneoActualizado.setNombre_torneo(detallesTorneo.getNombre_torneo());
                 torneoActualizado.setFecha(detallesTorneo.getFecha());
                 torneoActualizado.setTipoTorneo(detallesTorneo.getTipoTorneo()); // Actualizar la relación TipoTorneo
 

@@ -84,8 +84,8 @@
 
     <!-- Formulario para crear y actualizar torneos -->
     <div class="form-group">
-        <label for="nombreTorneo">Nombre del Torneo:</label>
-        <input type="text" id="nombreTorneo" name="nombreTorneo">
+        <label for="nombre_torneo">Nombre del Torneo:</label>
+        <input type="text" id="nombre_torneo" name="nombre_torneo">
     </div>
 
     <div class="form-group">
@@ -125,37 +125,49 @@
         fetch('/api/torneos')
             .then(response => response.json())
             .then(data => {
+                console.log(data);  // Verifica la estructura de los datos obtenidos del backend
                 const tableBody = document.querySelector("#torneosTable tbody");
                 tableBody.innerHTML = ''; // Limpiar la tabla
 
                 data.forEach(torneo => {
                     const row = document.createElement('tr');
+
+                    // Verifica que las propiedades aquí coincidan con tu modelo
                     row.innerHTML = `
-                            <td>${torneo.id_torneo}</td>
-                            <td>${torneo.nombreTorneo}</td>
-                            <td>${torneo.fecha}</td>
-                            <td>${torneo.tipoTorneo.nombre}</td>
-                            <td>
-                                <button class="button" onclick="editarTorneo(${torneo.id_torneo})">Editar</button>
-                                <button class="button delete-button" onclick="eliminarTorneo(${torneo.id_torneo})">Eliminar</button>
-                            </td>
-                        `;
+                    <td>${torneo.id_torneo ?? ''}</td>
+                    <td>${torneo.nombre_torneo ?? ''}</td>
+                    <td>${torneo.fecha ?? ''}</td>
+                    <td>${torneo.tipoTorneo?.nombre ?? ''}</td>
+                    <td>
+                        <button class="button" onclick="editarTorneo(${torneo.id_torneo})">Editar</button>
+                        <button class="button delete-button" onclick="eliminarTorneo(${torneo.id_torneo})">Eliminar</button>
+                    </td>
+                `;
                     tableBody.appendChild(row);
                 });
-            });
+            })
+            .catch(error => console.error('Error al obtener los torneos:', error));
     }
 
     // Función para crear un torneo (POST)
     document.getElementById('createTorneo').addEventListener('click', () => {
-        const nombreTorneo = document.getElementById('nombreTorneo').value;
+        const nombre_torneo = document.getElementById('nombre_torneo').value;
         const fecha = document.getElementById('fecha').value;
         const tipoTorneo = document.getElementById('tipoTorneo').value;
 
+        // Valida que los campos no estén vacíos
+        if (!nombre_torneo || !fecha) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
         const torneo = {
-            nombreTorneo,
+            nombre_torneo,
             fecha,
             tipoTorneo: { id_tipoTorneo: tipoTorneo }
         };
+
+        console.log("Datos enviados:", torneo); // Verifica el objeto antes de enviarlo
 
         fetch('/api/torneos', {
             method: 'POST',
@@ -164,11 +176,18 @@
             },
             body: JSON.stringify(torneo)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error("No se pudo crear el torneo.");
+                return response.json();
+            })
             .then(data => {
                 alert("Torneo creado con éxito!");
                 listarTorneos();
-            });
+                document.getElementById('nombre_torneo').value = '';  // Limpia los campos del formulario
+                document.getElementById('fecha').value = '';
+                document.getElementById('tipoTorneo').value = '';
+            })
+            .catch(error => console.error("Error al crear el torneo:", error));
     });
 
     // Función para eliminar un torneo (DELETE)
@@ -176,10 +195,12 @@
         fetch(`/api/torneos/${id}`, {
             method: 'DELETE'
         })
-            .then(() => {
+            .then(response => {
+                if (!response.ok) throw new Error("No se pudo eliminar el torneo.");
                 alert("Torneo eliminado con éxito!");
                 listarTorneos();
-            });
+            })
+            .catch(error => console.error("Error al eliminar el torneo:", error));
     }
 
     // Función para editar un torneo (UPDATE)
@@ -189,6 +210,7 @@
 
     // Llamada inicial para listar los torneos al cargar la página
     listarTorneos();
+
 </script>
 </body>
 </html>

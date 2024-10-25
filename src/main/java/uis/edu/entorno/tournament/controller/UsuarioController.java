@@ -23,4 +23,9 @@ public class UsuarioController {
     public String mostrarPaginaInicio() {
         return "index";
     }
+
+    @GetMapping("torneos")
+    public String mostrarTorneos() {
+        return "torneos";
+    }
 }
